@@ -1,7 +1,7 @@
 
 import {  Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
-import { reviewAdd } from "../services/review.service.js";
+import { reviewAdd, listStoreReviews } from "../services/review.service.js";
 
 // 리뷰 추가하기
 export const handleReviewAdd = async (req: Request, res: Response, next: NextFunction) => {
@@ -32,3 +32,15 @@ export const handleReviewAdd = async (req: Request, res: Response, next: NextFun
     });
   }
 };
+
+export const handleListStoreReviews = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const storeId = parseInt(req.params.storeId as string, 10);
+        const cursor = typeof req.query.cursor === "string" ? parseInt(req.query.cursor,10): 0;
+        const reviews = await listStoreReviews(storeId);
+
+        res.status(StatusCodes.OK).json(reviews);
+    } catch (err) {
+        next(err);
+    }
+}

@@ -12,28 +12,36 @@ export interface UserSignUpRequest {
     preferences: number[];
 }
 
+export interface UserSignUpResponse {
+    email: string;
+    name: string;
+    preferCategories: string[];
+}
+
 // 2. 요청받은 데이터를 우리 시스템에 맞는 데이터로 변환해주는 함수입니다. 
 export const bodyToUser = (body: any) => {
-  const birthDate = new Date(body.birthDate); //날짜 변환
-  return {
-    email: body.email, //필수 
-    password: body.password,
-    name: body.name, // 필수
-    nickname: body.nickname,
-    gender: body.gender, // 필수
-    birthDate, // 필수
-    address: body.address || "", 
-    detailAddress: body.detailAddress || "",
-    phoneNumber: body.phoneNumber,//필수
-    preferences: body.preferences,// 필수 
-  } as UserSignUpRequest;
-};
+    const birthDate = new Date(body.birthDate); //날짜 변환
+    return {
+        email: body.email, //필수 
+        password: body.password,
+        name: body.name, // 필수
+        nickname: body.nickname,
+        gender: body.gender, // 필수
+        birthDate, // 필수
+        address: body.address || "", 
+        detailAddress: body.detailAddress || "",
+        phoneNumber: body.phoneNumber,//필수
+        preferences: body.preferences,// 필수 
+    } as UserSignUpRequest;
+    };
 
 // 3. 시스템의 유저 정보와 카테고리 리스트를 클라이언트 응답용으로 변환해주는 함수
-export const responseFromUser = ({ user, preferences }: { user: any, preferences: string[] }) => {
-  return {
-    "email": user.email,
-    "name": user.name,
-    "preferCategories": preferences
-  };
-};
+export const responseFromUser = (data: { user: any, preferences: any[] }): UserSignUpResponse => {
+    const perferCategories= data.preferences.map((p)=>p.foodCategory.name);
+
+    return {
+        "email": data.user.email,
+        "name": data.user.name,
+        "preferCategories": data.preferences
+    }
+}

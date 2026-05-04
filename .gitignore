@@ -6,4 +6,5 @@ node_modules/
 .env.*
 
 # SQL for testing
-test_week5.sql
+test_umc.sql
+/src/generated/prisma
