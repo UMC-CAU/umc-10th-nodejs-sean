@@ -46,23 +46,53 @@ export const addUserMission = async (userId: number, missionId: number): Promise
     } 
 };
 
+// 단일 사용자 미션 조회
+export const getUserMissionById = async (userMissionId: number) => {
+    return await prisma.user_mission.findUnique({
+        where: { id: userMissionId },
+        include: { mission: true }
+    });
+};
+
 // 목록 조회: 진행중 or 완료된 미션 리스트 조회
-export const getUserMissionsByStatus = async (userId: number, status: string): Promise<any[]> => {
+export const getUserMissionsByStatus = async (userId: number, status: string, cursor: number | null): Promise<any[]> => {
     try {
         const userMissionList = await prisma.user_mission.findMany({
             where: {
                 userId: userId,
-                status: status
+                status: status,
+                id: cursor ? { lt: cursor } : undefined,
             },
             include: {
-                mission: true
+                mission: {
+                    include: {
+                        store: true
+                    }
+                }
             },
             orderBy: {
                 startedAt: 'desc'
             },
+            take: 5,
         });
         return userMissionList;
     } catch (err) {
         throw new Error(`사용자 미션 목록 조회 중 오류가 발생했습니다: ${err}`);
     }
+};
+
+// 사용자 미션 진행 완료로 바꾸기
+export const changeUserMissionStatus = async(userMissionId: number)=>{
+    return await prisma.user_mission.update({
+        where:{
+            id: userMissionId
+        },
+        data:{
+            status: "COMPLETED",
+            completedAt: new Date(),
+        },
+        include:{
+            mission:true
+        }
+    });
 };

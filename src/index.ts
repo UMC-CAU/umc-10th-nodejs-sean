@@ -3,9 +3,9 @@ import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import { handleUserSignUp } from "./modules/users/controllers/user.controller.js";
 import { handleStoreAdd } from "./modules/stores/controllers/store.controller.js";
-import { handleReviewAdd, handleListStoreReviews } from './modules/reviews/controllers/review.controller.js';
-import { handleMissionAdd } from './modules/missions/controllers/mission.controller.js';
-import { handleChallengeMission, handleGetUserMissions } from "./modules/userMissions/controllers/userMission.controller.js";
+import { handleReviewAdd, handleListStoreReviews, handleListUserReviews } from './modules/reviews/controllers/review.controller.js';
+import { handleMissionAdd, handleListStoreMissions } from './modules/missions/controllers/mission.controller.js';
+import { handleChallengeMission, handleGetUserMissions, handleCompleteUserMission } from "./modules/userMissions/controllers/userMission.controller.js";
 
 // 1. 환경 변수 설정
 dotenv.config();
@@ -24,13 +24,21 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello World! This is TypeScript Server!");
 });
 
+// 유저 관련 API
 app.post("/v1/users/signup", handleUserSignUp);
+// 가게 관련 API
 app.post('/v1/stores', handleStoreAdd);
+// 리뷰 관련 API
 app.post('/v1/stores/:storeId/reviews', handleReviewAdd);
-app.post('/v1/stores/:storeId/missions', handleMissionAdd);
-app.post('/v1/users/missions/:missionId/challenge', handleChallengeMission);
-app.get('/v1/users/missions', handleGetUserMissions);
+app.get('/v1/users/:userId/reviews', handleListUserReviews);
 app.get('/v1/stores/:storeId/reviews', handleListStoreReviews);
+// 미션 관련 API
+app.post('/v1/stores/:storeId/missions', handleMissionAdd);
+app.get('/v1/stores/:storeId/missions', handleListStoreMissions);
+// 사용자 미션 관련 API
+app.post('/v1/users/missions/:missionId/challenge', handleChallengeMission);
+app.get('/v1/users/:userId/missions', handleGetUserMissions);
+app.post('/v1/users/missions/:userMissionId/complete', handleCompleteUserMission);
 
 // 4. 서버 시작
 app.listen(port, () => {

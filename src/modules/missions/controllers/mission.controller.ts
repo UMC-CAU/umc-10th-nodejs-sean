@@ -2,8 +2,9 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { bodyToMission, responseFromMission } from "../dtos/mission.dto.js";
-import { missionAdd } from "../services/mission.service.js";
+import { missionAdd, listStoreMissions } from "../services/mission.service.js";
 
+// 미션 추가하기
 export const handleMissionAdd = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { storeId } = req.params;        
@@ -21,3 +22,16 @@ export const handleMissionAdd = async (req: Request, res: Response, next: NextFu
         });
     }
 };
+
+// 가게 미션목록
+export const handleListStoreMissions = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const storeId = parseInt(req.params.storeId as string, 10);
+        const cursor = typeof req.query.cursor === "string" ? parseInt(req.query.cursor,10): 0;
+        const missions = await listStoreMissions(storeId, cursor);
+
+        res.status(StatusCodes.OK).json(missions);
+    } catch (err) {
+        next(err);
+    }
+}

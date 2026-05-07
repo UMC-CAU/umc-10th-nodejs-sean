@@ -14,11 +14,11 @@ export const addUser = async (data: any): Promise<number | null> => {
     // 새로운 유저 생성
     const created = await prisma.user.create({
         data: {
-            email: data.dmail,   
+            email: data.email,   
             password: data.password,
             name: data.name,
             nickname: data.nickname,
-            gender: data.gender,
+            gender: data.gender === "여성" ? "FEMALE" : "MALE",
             birthDate: data.birthDate,
             address: data.address,
             detailAddress: data.detailAddress,

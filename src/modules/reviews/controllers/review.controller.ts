@@ -1,7 +1,7 @@
 
 import {  Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
-import { reviewAdd, listStoreReviews } from "../services/review.service.js";
+import { reviewAdd, listStoreReviews, listUserReviews } from "../services/review.service.js";
 
 // 리뷰 추가하기
 export const handleReviewAdd = async (req: Request, res: Response, next: NextFunction) => {
@@ -11,7 +11,7 @@ export const handleReviewAdd = async (req: Request, res: Response, next: NextFun
         const result = await reviewAdd({
             userId: userId,
             storeId: Number(storeId),
-            body: req.body.body,
+            content: req.body.content,
             rating: req.body.rating,
         });
         return res.status(StatusCodes.CREATED).json({ 
@@ -33,11 +33,25 @@ export const handleReviewAdd = async (req: Request, res: Response, next: NextFun
   }
 };
 
+// 가게 리뷰목록
 export const handleListStoreReviews = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const storeId = parseInt(req.params.storeId as string, 10);
         const cursor = typeof req.query.cursor === "string" ? parseInt(req.query.cursor,10): 0;
-        const reviews = await listStoreReviews(storeId);
+        const reviews = await listStoreReviews(storeId, cursor);
+
+        res.status(StatusCodes.OK).json(reviews);
+    } catch (err) {
+        next(err);
+    }
+}
+
+// 사용자 리뷰목록
+export const handleListUserReviews = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = parseInt(req.params.userId as string, 10);
+        const cursor = typeof req.query.cursor === "string" ? parseInt(req.query.cursor,10): 0;
+        const reviews = await listUserReviews(userId, cursor);
 
         res.status(StatusCodes.OK).json(reviews);
     } catch (err) {

@@ -2,7 +2,7 @@
 export interface ReviewAddRequest {
     userId: number;
     storeId: number;
-    body: string;
+    content: string;
     rating: number;
 }
 
@@ -29,12 +29,12 @@ export interface ReviewListResponse {
 export const responseFromReview = (review: any): ReviewItem => {
     return {
         id: review.id,
-        userId: review.user_id,
-        storeId: review.store_id,
-        content: review.body,
+        userId: review.userId,
+        storeId: review.storeId,
+        content: review.content,
         rating: review.rating,
-        createdAt: review.created_at,
-        updatedAt: review.updated_at
+        createdAt: review.createdAt,
+        updatedAt: review.updatedAt
     };
 };
 

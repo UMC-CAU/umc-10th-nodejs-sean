@@ -35,7 +35,7 @@ export const addStore = async (data: any): Promise<number | null> => {
         // 2. 가게 정보 삽입
         const result = await prisma.store.create({
             data:{
-                region_id: data.regionId, 
+                regionId: data.regionId, 
                 name: data.name, 
                 address: data.address, 
                 category: data.category

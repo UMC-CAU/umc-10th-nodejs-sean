@@ -1,6 +1,6 @@
 
-import { MissionAddRequest, responseFromMission } from "../dtos/mission.dto.js";
-import { addMission, getMission } from "../repositories/mission.repository.js";
+import { MissionAddRequest, responseFromMission, responseFromMissionList, MissionListResponse } from "../dtos/mission.dto.js";
+import { addMission, getMission, getStoreMissions } from "../repositories/mission.repository.js";
 import { getStore } from "../../stores/repositories/store.repository.js";
 
 export const missionAdd = async (data: MissionAddRequest) => {
@@ -16,4 +16,9 @@ export const missionAdd = async (data: MissionAddRequest) => {
     const mission = await getMission(missionId);
 
     return responseFromMission(mission);
+};
+
+export const listStoreMissions = async ( storeId: number, cursor: number | null ): Promise<MissionListResponse> => {
+    const missions = await getStoreMissions(storeId, cursor);
+    return responseFromMissionList(missions);
 };

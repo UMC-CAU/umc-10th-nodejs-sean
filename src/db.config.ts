@@ -1,4 +1,4 @@
-import mysql from "mysql2/promise";
+
 import dotenv from "dotenv";
 import { PrismaClient } from "../src/generated/prisma/client.js";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
@@ -11,7 +11,7 @@ const adapter = new PrismaMariaDb({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 3306,
-    connectionLimit: 10,
+    connectionLimit: 20,
 });
 
 export const prisma = new PrismaClient({

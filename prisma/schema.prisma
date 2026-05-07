@@ -75,7 +75,7 @@ model review {
     id         Int       @id @default(autoincrement())
     userId     Int?      @map("user_id")
     storeId    Int?      @map("store_id")
-    body       String    @db.Text
+    content    String    @db.Text @map("body")
     rating     Float?    @db.Float
     createdAt  DateTime? @default(now()) @db.DateTime(0) @map("created_at")
     user       User?     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "review_ibfk_1")
