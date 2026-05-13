@@ -1,6 +1,7 @@
 import { Controller, Route, Tags, Post, Get, Path, Query } from "tsoa";
 import { challengeMission, completeUserMission, listUserMissions } from "../services/userMission.service.js";
 import { UserMissionItem, UserMissionListResponse } from "../dtos/userMission.dto.js";
+import { ApiResponse, success } from "../../../common/responses/response.js";
 
 @Route("users")
 @Tags("UserMission")
@@ -12,13 +13,9 @@ export class UserMissionController extends Controller {
     public async handleChallengeMission(
         @Path() userId: number,
         @Path() missionId: number
-    ): Promise<UserMissionItem> {
-        const userMission = await challengeMission({
-            userId,
-            missionId,
-        });
-
-        return userMission;
+    ): Promise<ApiResponse<UserMissionItem>> {
+        const userMission = await challengeMission({ userId,  missionId });
+        return success(userMission);
     }
 
     // 유저별 미션 리스트 조회하기
@@ -28,10 +25,9 @@ export class UserMissionController extends Controller {
         @Path() userId: number,
         @Query() status: string = "ONGOING",
         @Query() cursor?: number
-    ): Promise<UserMissionListResponse> {
+    ): Promise<ApiResponse<UserMissionListResponse>> {
         const userMissions = await listUserMissions(userId, status, cursor || 0);
-        
-        return userMissions;
+        return success(userMissions);
     }
 
     // 미션 완료 처리하기
@@ -39,9 +35,8 @@ export class UserMissionController extends Controller {
     @Post("missions/{userMissionId}/complete")
     public async handleCompleteUserMission(
         @Path() userMissionId: number
-    ): Promise<UserMissionItem> {
+    ): Promise<ApiResponse<UserMissionItem>> {
         const userMission = await completeUserMission(userMissionId);
-
-        return userMission;
+        return success(userMission);
     }
 }

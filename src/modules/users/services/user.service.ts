@@ -2,6 +2,7 @@
 import bcrypt from "bcrypt";
 import { UserSignUpRequest, UserSignUpResponse } from "../dtos/user.dto.js"; 
 import { addUser, getUser, getUserPreferencesByUserId, setPreference, } from "../repositories/user.repository.js";
+import { DuplicateUserEmailError, UserNotFoundError } from "../../../common/errors/error.js";
 
 export const userSignUp = async (data: UserSignUpRequest): Promise<UserSignUpResponse> => {
     
@@ -23,7 +24,7 @@ export const userSignUp = async (data: UserSignUpRequest): Promise<UserSignUpRes
     });
 
     if (joinUserId === null) {
-        throw new Error("이미 존재하는 이메일입니다.");
+        throw new DuplicateUserEmailError("이미 존재하는 이메일입니다.");
     }
 
     for (const preference of data.preferences) {
@@ -33,7 +34,7 @@ export const userSignUp = async (data: UserSignUpRequest): Promise<UserSignUpRes
     const user = await getUser(joinUserId);
 
     if (!user) {
-    throw new Error("사용자 정보를 찾을 수 없습니다.");
+    throw new UserNotFoundError("사용자 정보를 찾을 수 없습니다.");
     }
 
     const preferences = await getUserPreferencesByUserId(joinUserId);

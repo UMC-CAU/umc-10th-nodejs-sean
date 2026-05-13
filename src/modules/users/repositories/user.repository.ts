@@ -25,7 +25,6 @@ export const addUser = async (data: UserSignUpRequest): Promise<number | null> =
             address: data.address,
             detailAddress: data.detailAddress,
             phoneNumber: data.phoneNumber,
-            preferences: data.preferences,
         },         
     });
     return created.id;

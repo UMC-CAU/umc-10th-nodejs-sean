@@ -1,6 +1,7 @@
 import { Controller, Route, Tags, Post, Get, Path, Query, Body } from "tsoa";
 import { missionAdd, listStoreMissions } from "../services/mission.service.js";
 import { MissionItem, MissionListResponse, MissionAddBody } from "../dtos/mission.dto.js";
+import { ApiResponse, success } from "../../../common/responses/response.js";
 
 @Route("stores")
 @Tags("Mission")
@@ -12,11 +13,9 @@ export class MissionController extends Controller {
     public async handleMissionAdd(
         @Path() storeId: number,
         @Body() body: MissionAddBody
-    ): Promise<MissionItem> {
-        return await missionAdd({
-            storeId,
-            ...body
-        });
+    ): Promise<ApiResponse<MissionItem>> {
+        const mission = await missionAdd({ storeId, ...body });
+        return success(mission);
     }
 
     // 미션 조회하기
@@ -25,7 +24,8 @@ export class MissionController extends Controller {
     public async handleListStoreMissions(
         @Path() storeId: number,
         @Query() cursor?: number
-    ): Promise<MissionListResponse> {
-        return await listStoreMissions(storeId, cursor || 0);
+    ): Promise<ApiResponse<MissionListResponse>> {
+        const mission = await listStoreMissions(storeId, cursor || 0);
+        return success(mission);
     }
 }
