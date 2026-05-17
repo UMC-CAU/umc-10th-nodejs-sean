@@ -1,15 +1,20 @@
-import { Controller, Route, Tags, Post, Get, Path, Query, Body } from "tsoa";
+import { Controller, Route, Tags, Post, Get, Path, Query, Body, Response } from "tsoa";
 import { missionAdd, listStoreMissions } from "../services/mission.service.js";
 import { MissionItem, MissionListResponse, MissionAddBody } from "../dtos/mission.dto.js";
-import { ApiResponse, success } from "../../../common/responses/response.js";
+import { ApiResponse, success, ErrorResponse } from "../../../common/responses/response.js";
 
 @Route("stores")
 @Tags("Mission")
 export class MissionController extends Controller {
 
-    // 미션 추가하기
-    // POST /v1/stores/{storeId}/missions     
+    /**
+     * 미션 추가 API
+     * @summary 가게에 새로운 미션을 등록합니다.
+     * @endpoint POST /v1/stores/{storeId}/missions
+     */   
     @Post("{storeId}/missions")
+    @Response<ApiResponse<MissionItem>>(200, "미션 등록 성공")
+    @Response<ErrorResponse>(404, "존재하지 않는 가게")
     public async handleMissionAdd(
         @Path() storeId: number,
         @Body() body: MissionAddBody
@@ -18,9 +23,14 @@ export class MissionController extends Controller {
         return success(mission);
     }
 
-    // 미션 조회하기
-    // GET /v1/stores/{storeId}/missions)   
+    /**
+     * 가게 미션 목록 조회 API
+     * @summary 특정 가게의 미션 목록을 조회합니다.
+     * @endpoint GET /v1/stores/{storeId}/missions
+     */   
     @Get("{storeId}/missions")
+    @Response<ApiResponse<MissionListResponse>>(200, "미션 목록 조회 성공")
+    @Response<ErrorResponse>(404, "존재하지 않는 가게")
     public async handleListStoreMissions(
         @Path() storeId: number,
         @Query() cursor?: number

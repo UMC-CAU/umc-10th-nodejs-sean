@@ -8,3 +8,13 @@ export const success = <T>(data: T): ApiResponse<T> => ({
   error: null,
   data,
 });
+
+export interface ErrorResponse {
+  resultType: "FAIL";
+  error: {
+    errorCode: string;
+    message: string;
+    data: unknown | null;
+  };
+  data: null;
+}

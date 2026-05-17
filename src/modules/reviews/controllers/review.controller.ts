@@ -1,15 +1,20 @@
-import { Controller, Route, Tags, Post, Get, Path, Query, Body } from "tsoa";
+import { Controller, Route, Tags, Post, Get, Path, Query, Body, Response } from "tsoa";
 import { reviewAdd, listStoreReviews, listUserReviews } from "../services/review.service.js";
 import { ReviewItem, ReviewListResponse, ReviewAddBody } from "../dtos/review.dto.js";
-import { ApiResponse, success } from "../../../common/responses/response.js";
+import { ApiResponse, success, ErrorResponse } from "../../../common/responses/response.js";
 
 @Route("stores")
 @Tags("Review")
 export class ReviewController extends Controller {
     
-    // 리뷰 추가하기
-    // POST /v1/stores/{storeId}/reviews
+    /**
+     * 리뷰 추가 API
+     * @summary 가게에 리뷰를 등록합니다.
+     * @endpoint POST /v1/stores/{storeId}/reviews
+     */
     @Post("{storeId}/reviews")
+    @Response<ApiResponse<ReviewItem>>(200, "리뷰 등록 성공")
+    @Response<ErrorResponse>(404, "존재하지 않는 가게 또는 유저")
     public async handleReviewAdd(
         @Path() storeId: number,
         @Body() body: ReviewAddBody
@@ -23,9 +28,14 @@ export class ReviewController extends Controller {
         return success(review);
     }
 
-    // 가게 리뷰 목록 조회하기
-    // GET /v1/stores/{storeId}/reviews
+    /**
+     * 가게 리뷰 목록 조회 API
+     * @summary 특정 가게의 리뷰 목록을 조회합니다.
+     * @endpoint GET /v1/stores/{storeId}/reviews
+     */
     @Get("{storeId}/reviews")
+    @Response<ApiResponse<ReviewListResponse>>(200, "가게 리뷰 목록 조회 성공")
+    @Response<ErrorResponse>(404, "존재하지 않는 가게")
     public async handleListStoreReviews(
         @Path() storeId: number,
         @Query() cursor?: number
@@ -40,9 +50,14 @@ export class ReviewController extends Controller {
 @Tags("Review")
 export class UserReviewController extends Controller {
     
-    // 사용자 리뷰 목록 조회하기
-    // GET /v1/users/{userId}/reviews
+    /**
+     * 유저 리뷰 목록 조회 API
+     * @summary 특정 유저의 리뷰 목록을 조회합니다.
+     * @endpoint GET /v1/users/{userId}/reviews
+     */
     @Get("{userId}/reviews")
+    @Response<ApiResponse<ReviewListResponse>>(200, "유저 리뷰 목록 조회 성공")
+    @Response<ErrorResponse>(404, "존재하지 않는 유저")
     public async handleListUserReviews(
         @Path() userId: number,
         @Query() cursor?: number

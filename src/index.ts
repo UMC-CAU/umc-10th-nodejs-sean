@@ -5,6 +5,9 @@ import { RegisterRoutes } from "./generated/routes.js";
 import { AppError } from "./common/errors/app.error.js";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
+import swaggerUi from "swagger-ui-express";  
+import path from "path";                
+import fs from "fs"; 
 
 // 환경 변수 설정
 dotenv.config();
@@ -36,6 +39,12 @@ app.use(morgan("dev"));
 // const router = express.Router();
 RegisterRoutes(app); 
 // app.use("/v1", router);
+
+// Swagger 설정
+const swaggerFile = JSON.parse(
+  fs.readFileSync(path.resolve("dist/swagger.json"), "utf8")
+);
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // 에러 처리
 app.use((err: AppError, req: Request, res: Response, next: NextFunction) => {
