@@ -8,6 +8,9 @@ import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";  
 import path from "path";                
 import fs from "fs"; 
+import passport from "passport";
+import { googleStrategy, jwtStrategy } from "./auth.config.js";
+import { prisma } from "./db.config.js";
 
 // 환경 변수 설정
 dotenv.config();
@@ -34,6 +37,29 @@ app.use(express.json()); // request의 본문을 json으로 해석할 수 있도
 app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형태로 본문 데이터 해석
 app.use(cookieParser());
 app.use(morgan("dev"));
+
+// passport 초기화
+passport.use(googleStrategy);
+passport.use(jwtStrategy);
+app.use(passport.initialize());
+
+// 구글 로그인 라우터
+app.get("/oauth2/login/google", passport.authenticate("google", { session: false }));
+app.get("/oauth2/callback/google",
+  passport.authenticate("google", { session: false, failureRedirect: "/login-failed" }),
+  (req, res) => {
+    res.status(200).json({ success: true, tokens: req.user });
+  }
+);
+
+// 보호된 라우트
+const isLogin = passport.authenticate('jwt', { session: false });
+app.get('/v1/mypage', isLogin, (req, res) => {
+  res.status(200).json({
+    message: `인증 성공! ${(req.user as any).name}님의 마이페이지입니다.`,
+    user: req.user,
+  });
+});
 
 // Express.js에 생성한 엔드 포인트들을 register
 // const router = express.Router();

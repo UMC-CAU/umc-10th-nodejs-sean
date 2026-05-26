@@ -1,7 +1,7 @@
 
 import { prisma } from "../../../db.config.js";
 import { User } from "../../../generated/prisma/client.js";
-import { UserSignUpRequest } from "../dtos/user.dto.js";
+import { UserSignUpRequest, UserUpdateRequest } from "../dtos/user.dto.js";
 
 // 사용자 추가하기
 export const addUser = async (data: UserSignUpRequest): Promise<number | null> => {
@@ -13,7 +13,6 @@ export const addUser = async (data: UserSignUpRequest): Promise<number | null> =
         return null;
     }
 
-    // 새로운 유저 생성
     const created = await prisma.user.create({
         data: {
             email: data.email,   
@@ -35,6 +34,28 @@ export const getUser = async (userId: number): Promise<User | null> => {
     return await prisma.user.findUnique({
         where: {
             id: userId
+        },
+    });
+};
+
+// 이메일로 사용자 조회하기 (소셜 로그인용)
+export const getUserByEmail = async (email: string): Promise<User | null> => {
+    return await prisma.user.findFirst({
+        where: { email },
+    });
+};
+
+// 사용자 정보 수정하기
+export const updateUser = async (userId: number, data: UserUpdateRequest): Promise<User> => {
+    return await prisma.user.update({
+        where: { id: userId },
+        data: {
+            nickname: data.nickname,
+            gender: data.gender === "여성" ? "FEMALE" : data.gender === "남성" ? "MALE" : undefined,
+            birthDate: data.birthDate ? new Date(data.birthDate) : undefined,
+            address: data.address,
+            detailAddress: data.detailAddress,
+            phoneNumber: data.phoneNumber,
         },
     });
 };

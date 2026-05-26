@@ -1,7 +1,6 @@
-
 import bcrypt from "bcrypt";
-import { UserSignUpRequest, UserSignUpResponse } from "../dtos/user.dto.js"; 
-import { addUser, getUser, getUserPreferencesByUserId, setPreference, } from "../repositories/user.repository.js";
+import { UserSignUpRequest, UserSignUpResponse, UserUpdateRequest, UserUpdateResponse } from "../dtos/user.dto.js"; 
+import { addUser, getUser, getUserPreferencesByUserId, setPreference, updateUser } from "../repositories/user.repository.js";
 import { DuplicateUserEmailError, UserNotFoundError } from "../../../common/errors/error.js";
 
 export const userSignUp = async (data: UserSignUpRequest): Promise<UserSignUpResponse> => {
@@ -43,5 +42,25 @@ export const userSignUp = async (data: UserSignUpRequest): Promise<UserSignUpRes
         email: user.email,
         name: user.name,
         preferCategories: preferences.map((p) => p.foodCategory.name),
+    };
+};
+
+export const userUpdate = async (userId: number, data: UserUpdateRequest): Promise<UserUpdateResponse> => {
+    const user = await getUser(userId);
+    if (!user) {
+        throw new UserNotFoundError("존재하지 않는 사용자입니다.");
+    }
+
+    const updated = await updateUser(userId, data);
+
+    return {
+        email: updated.email,
+        name: updated.name,
+        nickname: updated.nickname ?? "",
+        gender: updated.gender,
+        birthDate: updated.birthDate,
+        address: updated.address ?? "",
+        detailAddress: updated.detailAddress ?? "",
+        phoneNumber: updated.phoneNumber ?? "",
     };
 };

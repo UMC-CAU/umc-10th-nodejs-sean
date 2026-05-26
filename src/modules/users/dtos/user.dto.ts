@@ -32,3 +32,38 @@ export interface UserSignUpResponse {
     preferCategories: string[];
 }
 
+// 사용자 정보 수정 요청
+export interface UserUpdateRequest {
+    /** 유저 닉네임 */
+    nickname?: string;
+    /** 성별 (예: 남성, 여성) */
+    gender?: string;
+    /** 생년월일 (예: 2000-01-01) */
+    birthDate?: string | Date;
+    /** 주소 */
+    address?: string;
+    /** 상세 주소 */
+    detailAddress?: string;
+    /** 전화번호 (예: 010-1234-5678) */
+    phoneNumber?: string;
+}
+
+// 사용자 정보 수정 응답
+export interface UserUpdateResponse {
+    /** 유저 이메일 */
+    email: string;
+    /** 유저 이름 */
+    name: string;
+    /** 유저 닉네임 */
+    nickname: string;
+    /** 성별 */
+    gender: string;
+    /** 생년월일 */
+    birthDate: Date;
+    /** 주소 */
+    address: string;
+    /** 상세 주소 */
+    detailAddress: string;
+    /** 전화번호 */
+    phoneNumber: string;
+}

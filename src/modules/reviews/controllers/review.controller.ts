@@ -1,7 +1,8 @@
-import { Controller, Route, Tags, Post, Get, Path, Query, Body, Response } from "tsoa";
+import { Controller, Route, Tags, Post, Get, Path, Query, Body, Response, Request as TsoaRequest } from "tsoa";
 import { reviewAdd, listStoreReviews, listUserReviews } from "../services/review.service.js";
 import { ReviewItem, ReviewListResponse, ReviewAddBody } from "../dtos/review.dto.js";
 import { ApiResponse, success, ErrorResponse } from "../../../common/responses/response.js";
+import { Request as ExpressRequest} from "express";
 
 @Route("stores")
 @Tags("Review")
@@ -17,11 +18,13 @@ export class ReviewController extends Controller {
     @Response<ErrorResponse>(404, "존재하지 않는 가게 또는 유저")
     public async handleReviewAdd(
         @Path() storeId: number,
-        @Body() body: ReviewAddBody
+        @Body() body: Omit<ReviewAddBody, "userId">,
+        @TsoaRequest() request: ExpressRequest
     ): Promise<ApiResponse<ReviewItem>> {
+        const userId = (request.user as any).id;  // JWT에서 추출
         const review = await reviewAdd({
             storeId,
-            userId: body.userId,
+            userId,
             content: body.content,
             rating: body.rating
         });
@@ -53,15 +56,16 @@ export class UserReviewController extends Controller {
     /**
      * 유저 리뷰 목록 조회 API
      * @summary 특정 유저의 리뷰 목록을 조회합니다.
-     * @endpoint GET /v1/users/{userId}/reviews
+     * @endpoint GET /v1/users/me/reviews
      */
-    @Get("{userId}/reviews")
+    @Get("me/reviews")
     @Response<ApiResponse<ReviewListResponse>>(200, "유저 리뷰 목록 조회 성공")
     @Response<ErrorResponse>(404, "존재하지 않는 유저")
     public async handleListUserReviews(
-        @Path() userId: number,
+        @TsoaRequest() request: ExpressRequest,
         @Query() cursor?: number
     ): Promise<ApiResponse<ReviewListResponse>> {
+        const userId = (request.user as any).id;
         const reviews = await listUserReviews(userId, cursor || 0);
         return success(reviews);
     }
