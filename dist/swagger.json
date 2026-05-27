@@ -172,6 +172,121 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"UserUpdateResponse": {
+				"properties": {
+					"email": {
+						"type": "string",
+						"description": "유저 이메일"
+					},
+					"name": {
+						"type": "string",
+						"description": "유저 이름"
+					},
+					"nickname": {
+						"type": "string",
+						"description": "유저 닉네임"
+					},
+					"gender": {
+						"type": "string",
+						"description": "성별"
+					},
+					"birthDate": {
+						"type": "string",
+						"format": "date-time",
+						"description": "생년월일"
+					},
+					"address": {
+						"type": "string",
+						"description": "주소"
+					},
+					"detailAddress": {
+						"type": "string",
+						"description": "상세 주소"
+					},
+					"phoneNumber": {
+						"type": "string",
+						"description": "전화번호"
+					}
+				},
+				"required": [
+					"email",
+					"name",
+					"nickname",
+					"gender",
+					"birthDate",
+					"address",
+					"detailAddress",
+					"phoneNumber"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ApiResponse_UserUpdateResponse_": {
+				"properties": {
+					"resultType": {
+						"type": "string",
+						"enum": [
+							"SUCCESS"
+						],
+						"nullable": false
+					},
+					"error": {
+						"type": "number",
+						"enum": [
+							null
+						],
+						"nullable": true
+					},
+					"data": {
+						"$ref": "#/components/schemas/UserUpdateResponse"
+					}
+				},
+				"required": [
+					"resultType",
+					"error",
+					"data"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserUpdateRequest": {
+				"properties": {
+					"nickname": {
+						"type": "string",
+						"description": "유저 닉네임"
+					},
+					"gender": {
+						"type": "string",
+						"description": "성별 (예: 남성, 여성)"
+					},
+					"birthDate": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "string",
+								"format": "date-time"
+							}
+						],
+						"description": "생년월일 (예: 2000-01-01)"
+					},
+					"address": {
+						"type": "string",
+						"description": "주소"
+					},
+					"detailAddress": {
+						"type": "string",
+						"description": "상세 주소"
+					},
+					"phoneNumber": {
+						"type": "string",
+						"description": "전화번호 (예: 010-1234-5678)"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
 			"UserMissionItem": {
 				"properties": {
 					"id": {
@@ -510,13 +625,8 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"ReviewAddBody": {
+			"Pick_ReviewAddBody.Exclude_keyofReviewAddBody.userId__": {
 				"properties": {
-					"userId": {
-						"type": "number",
-						"format": "double",
-						"description": "유저 ID"
-					},
 					"content": {
 						"type": "string",
 						"description": "리뷰 내용"
@@ -528,12 +638,15 @@
 					}
 				},
 				"required": [
-					"userId",
 					"content",
 					"rating"
 				],
 				"type": "object",
-				"additionalProperties": false
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Omit_ReviewAddBody.userId_": {
+				"$ref": "#/components/schemas/Pick_ReviewAddBody.Exclude_keyofReviewAddBody.userId__",
+				"description": "Construct a type with the properties of T except for those in type K."
 			},
 			"ReviewListResponse": {
 				"properties": {
@@ -856,6 +969,50 @@
 				}
 			}
 		},
+		"/users/me": {
+			"patch": {
+				"operationId": "HandleUserUpdate",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ApiResponse_UserUpdateResponse_"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "존재하지 않는 사용자",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "사용자 정보 수정 API",
+				"summary": "로그인한 사용자의 정보를 수정합니다.",
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UserUpdateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/users/{userId}/missions/{missionId}/challenge": {
 			"post": {
 				"operationId": "HandleChallengeMission",
@@ -900,15 +1057,6 @@
 				"parameters": [
 					{
 						"in": "path",
-						"name": "userId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "path",
 						"name": "missionId",
 						"required": true,
 						"schema": {
@@ -919,7 +1067,7 @@
 				]
 			}
 		},
-		"/users/{userId}/missions": {
+		"/users/me/missions": {
 			"get": {
 				"operationId": "HandleGetUserMissions",
 				"responses": {
@@ -952,15 +1100,6 @@
 				"security": [],
 				"parameters": [
 					{
-						"in": "path",
-						"name": "userId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
 						"description": "미션 상태 (예: ONGOING, COMPLETE)",
 						"in": "query",
 						"name": "status",
@@ -971,7 +1110,6 @@
 						}
 					},
 					{
-						"description": "커서 기반 페이지네이션",
 						"in": "query",
 						"name": "cursor",
 						"required": false,
@@ -1138,7 +1276,7 @@
 					"content": {
 						"application/json": {
 							"schema": {
-								"$ref": "#/components/schemas/ReviewAddBody"
+								"$ref": "#/components/schemas/Omit_ReviewAddBody.userId_"
 							}
 						}
 					}
@@ -1196,7 +1334,7 @@
 				]
 			}
 		},
-		"/users/{userId}/reviews": {
+		"/users/me/reviews": {
 			"get": {
 				"operationId": "HandleListUserReviews",
 				"responses": {
@@ -1228,15 +1366,6 @@
 				],
 				"security": [],
 				"parameters": [
-					{
-						"in": "path",
-						"name": "userId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
 					{
 						"in": "query",
 						"name": "cursor",

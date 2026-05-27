@@ -1,8 +1,8 @@
-import { Body, Controller, Post, Patch, Route, Tags, Response, Request as TsoaRequest } from "tsoa";
+import { Body, Controller, Post, Patch, Route, Tags, Response, Request, Security } from "tsoa";
 import { UserSignUpRequest, UserSignUpResponse, UserUpdateRequest, UserUpdateResponse } from "../dtos/user.dto.js";
 import { userSignUp, userUpdate } from "../services/user.service.js";
 import { ApiResponse, success, ErrorResponse } from "../../../common/responses/response.js";
-import { Request as ExpressRequest } from "express";
+import express from "express";
 
 @Route("users")
 @Tags("Users")
@@ -37,7 +37,7 @@ export class UserController extends Controller {
     @Response<ErrorResponse>(404, "존재하지 않는 사용자")
     public async handleUserUpdate(
         @Body() body: UserUpdateRequest,
-        @TsoaRequest() request: ExpressRequest
+        @Request() request: any
     ): Promise<ApiResponse<UserUpdateResponse>> {
         const userId = (request.user as any).id;
         const user = await userUpdate(userId, body);

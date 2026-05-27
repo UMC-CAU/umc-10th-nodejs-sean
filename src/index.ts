@@ -61,10 +61,16 @@ app.get('/v1/mypage', isLogin, (req, res) => {
   });
 });
 
-// Express.js에 생성한 엔드 포인트들을 register
-// const router = express.Router();
+app.patch("/v1/users/me", isLogin);
+app.post("/v1/stores/:storeId/missions", isLogin);
+app.post("/v1/stores/:storeId/reviews", isLogin);
+app.get("/v1/users/me/reviews", isLogin);
+app.post("/v1/stores", isLogin);
+app.post("/v1/users/me/missions/:missionId/challenge", isLogin);
+app.get("/v1/users/me/missions", isLogin);
+app.post("/v1/users/missions/:userMissionId/complete", isLogin);
+
 RegisterRoutes(app); 
-// app.use("/v1", router);
 
 // Swagger 설정
 const swaggerFile = JSON.parse(
@@ -78,7 +84,6 @@ app.use((err: AppError, req: Request, res: Response, next: NextFunction) => {
   if (res.headersSent) {
     return next(err);
   }
-
   (res.status(err.statusCode || 500) as any).error({
     errorCode: err.errorCode || "unknown",
     message: err.message || null,

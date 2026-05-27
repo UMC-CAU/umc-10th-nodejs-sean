@@ -1,8 +1,7 @@
-import { Controller, Route, Tags, Post, Get, Path, Query, Response, Request as TsoaRequest } from "tsoa";
+import { Controller, Route, Tags, Post, Get, Path, Query, Response, Request, Security } from "tsoa";
 import { challengeMission, completeUserMission, listUserMissions } from "../services/userMission.service.js";
 import { UserMissionItem, UserMissionListResponse } from "../dtos/userMission.dto.js";
 import { ApiResponse, success, ErrorResponse } from "../../../common/responses/response.js";
-import { Request as ExpressRequest } from "express";
 
 @Route("users")
 @Tags("UserMission")
@@ -18,7 +17,7 @@ export class UserMissionController extends Controller {
     @Response<ErrorResponse>(404, "존재하지 않는 유저 또는 미션")
     @Response<ErrorResponse>(409, "이미 도전 중인 미션")
     public async handleChallengeMission(
-        @TsoaRequest() request: ExpressRequest,
+        @Request() request: any,
         @Path() missionId: number
     ): Promise<ApiResponse<UserMissionItem>> {
         const userId = (request.user as any).id;
@@ -35,7 +34,7 @@ export class UserMissionController extends Controller {
     @Response<ApiResponse<UserMissionListResponse>>(200, "미션 목록 조회 성공")
     @Response<ErrorResponse>(404, "존재하지 않는 유저")
     public async handleGetUserMissions(
-        @TsoaRequest() request: ExpressRequest,
+        @Request() request: any,
         /** 미션 상태 (예: ONGOING, COMPLETE) */
         @Query() status: string = "ONGOING",
         @Query() cursor?: number

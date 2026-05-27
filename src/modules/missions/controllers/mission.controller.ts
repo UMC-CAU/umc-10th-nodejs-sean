@@ -1,4 +1,4 @@
-import { Controller, Route, Tags, Post, Get, Path, Query, Body, Response } from "tsoa";
+import { Controller, Route, Tags, Post, Get, Path, Query, Body, Response, Security } from "tsoa";
 import { missionAdd, listStoreMissions } from "../services/mission.service.js";
 import { MissionItem, MissionListResponse, MissionAddBody } from "../dtos/mission.dto.js";
 import { ApiResponse, success, ErrorResponse } from "../../../common/responses/response.js";
