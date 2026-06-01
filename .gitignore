@@ -11,3 +11,6 @@ test_umc.sql
 
 # SSH private key
 spongebob.pem
+
+# Auto-generated files (TSOA & Prisma)
+/src/generated/
