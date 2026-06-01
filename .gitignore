@@ -14,3 +14,6 @@ spongebob.pem
 
 # Auto-generated files (TSOA & Prisma)
 /src/generated/
+
+# build output
+dist/
