@@ -8,3 +8,6 @@ node_modules/
 # SQL for testing
 test_umc.sql
 /src/generated/prisma
+
+# SSH private key
+spongebob.pem
