@@ -38,6 +38,7 @@ jobs:
           mkdir -p artifact
           cp -r dist artifact/dist
           cp -r node_modules artifact/node_modules
+          cp -r src/generated/prisma artifact/dist/generated/prisma
           cp package.json package-lock.json prisma.config.ts artifact/
           if [ -d prisma ]; then cp -r prisma artifact/prisma; fi
           tar -czf artifact.tgz -C artifact .
