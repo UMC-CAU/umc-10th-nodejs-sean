@@ -1,13 +1,14 @@
 {
   "entryFile": "src/index.ts",
   "noImplicitAdditionalProperties": "throw-on-extras",
-  "controllerPathGlobs": ["src/**/*.controller.ts"],
+  "controllerPathGlobs": ["src/modules/**/controllers/*.controller.ts"],
   "spec": {
     "outputDirectory": "dist",
     "specVersion": 3
   },
   "routes": {
     "routesDir": "src/generated",
-    "basePath": "/v1"
+    "basePath": "/v1",
+    "esm": true
   }
 }
