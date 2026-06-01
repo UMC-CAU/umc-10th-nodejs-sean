@@ -76,7 +76,7 @@ RegisterRoutes(app);
 const swaggerFile = JSON.parse(
   fs.readFileSync(path.resolve("dist/swagger.json"), "utf8")
 );
-swaggerFile.servers = [{ url: "http://localhost:3000/v1" }];
+swaggerFile.servers = [{ url: "http://52.79.208.70:3000/v1" }];
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 // 에러 처리
