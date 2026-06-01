@@ -1,0 +1,86 @@
+import { prisma } from "../../../db.config.js";
+import { UserMission } from "../../../generated/prisma/client.js";
+
+// 유저가 이 미션을 가지고 있는지 조회
+export const getUserMission = async (userId: number, missionId: number): Promise<UserMission | null> => {
+    return await prisma.userMission.findFirst({
+        where: {
+            userId: userId,
+            missionId: missionId,
+        },
+    });
+};
+
+// 새 미션 도전 추가
+export const addUserMission = async (userId: number, missionId: number): Promise<number> => {
+    // 미션 정보 가져오기
+    const targetMission = await prisma.mission.findUnique({
+        where: {
+            id: missionId
+        },
+    });
+    if (!targetMission) {
+        throw new Error("존재하지 않는 미션입니다.");
+    }
+
+    // 새 미션 도전 추가
+    const newUserMission = await prisma.userMission.create({
+        data: {
+            userId: userId,
+            missionId: missionId,
+            status: "ONGOING",
+            startedAt: new Date(),
+            progressCount: 0,
+            rewardPoint: targetMission.reward,
+            endDate: targetMission.endDate
+        },
+    });
+    return newUserMission.id;
+};
+
+// 단일 사용자 미션 조회
+export const getUserMissionById = async (userMissionId: number) => {
+    return await prisma.userMission.findUnique({
+        where: { id: userMissionId },
+        include: { mission: true }
+    });
+};
+
+// 목록 조회: 진행중 or 완료된 미션 리스트 조회
+export const getUserMissionsByStatus = async (userId: number, status: string, cursor: number | null): Promise<any[]> => {
+    const userMissionList = await prisma.userMission.findMany({
+        where: {
+            userId: userId,
+            status: status,
+            id: cursor ? { lt: cursor } : undefined,
+        },
+        include: {
+            mission: {
+                include: {
+                    store: true
+                }
+            }
+        },
+        orderBy: {
+            startedAt: 'desc'
+        },
+        take: 5,
+    });
+    return userMissionList;
+};
+
+// 사용자 미션 진행 완료로 바꾸기
+export const changeUserMissionStatus = async (userMissionId: number) => {
+    return await prisma.userMission.update({
+        where: {
+            id: userMissionId
+        },
+        data: {
+            status: "COMPLETED",
+            completedAt: new Date(),
+        },
+        include: {
+            mission: true
+        }
+    });
+};
