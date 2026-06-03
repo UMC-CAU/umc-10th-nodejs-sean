@@ -1,20 +1,14 @@
 import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
 import { PrismaClient } from "./generated/prisma/client.js";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+dotenv.config();
 
 const adapter = new PrismaMariaDb({
-    host: process.env.DB_HOST,
+    socketPath: "/var/run/mysqld/mysqld.sock",
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    port: process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 3306,
     connectionLimit: 20,
 });
 
