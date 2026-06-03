@@ -45,10 +45,19 @@ app.use(passport.initialize());
 
 // 구글 로그인 라우터
 app.get("/oauth2/login/google", passport.authenticate("google", { session: false }));
-app.get("/oauth2/callback/google",
-  passport.authenticate("google", { session: false, failureRedirect: "/login-failed" }),
-  (req, res) => {
-    res.status(200).json({ success: true, tokens: req.user });
+app.get("/oauth2/callback/google", 
+  (req, res, next) => {
+    passport.authenticate("google", { session: false, failureRedirect: "/login-failed" }, (err, user, info) => {
+      if (err) {
+        console.error("GOOGLE CALLBACK ERROR:", err);
+        return res.status(500).json({ error: err.message });
+      }
+      if (!user) {
+        console.error("GOOGLE CALLBACK NO USER:", info);
+        return res.status(400).json({ error: "no user", info });
+      }
+      res.status(200).json({ success: true, tokens: user });
+    })(req, res, next);
   }
 );
 
